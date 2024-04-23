@@ -48,7 +48,7 @@ jobs:
           node-version: '18.x'
 
       - name: Deploy to Render
-        uses: georgeU2030/taskapi_deploy@v0.04
+        uses: georgeU2030/taskapi_deploy@v0.0.4
         with:
           service-id: ${{ secrets.SERVICE_ID }}
           api-key: ${{ secrets.RENDER_API_KEY }}
