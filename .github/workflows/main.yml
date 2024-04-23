@@ -1,0 +1,48 @@
+name: NestJS CI/CD
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+
+  test:
+    name: Test
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [20.x]
+
+    steps:
+      - name: Checkout 
+        uses: actions/checkout@v3 # was "v2" before 
+        with: 
+          fetch-depth: 0
+
+      - name: Use Nest.JS ${{ matrix.node-version }}
+        uses: actions/setup-node@v3 # was "v2" before
+        with: 
+          node-version: ${{ matrix.node-version }}
+
+      - name: NPM install, build and test
+        run: |
+          npm install
+          npm run 
+          npm test
+        env: 
+          MONGO_URI: ${{ secrets.MONGO_URI }}
+
+  deploy:
+    name: Deploy
+    needs: [test] 
+    runs-on: ubuntu-latest
+
+    steps: 
+      - name: Deploy to production
+        uses: georgeu2021/render-deploy-action@v0.0.8
+        with:
+          service-id: ${{ secrets.SERVICE_ID }} 
+          api-key: ${{ secrets.RENDER_API_KEY }} 
+
+        
