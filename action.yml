@@ -11,5 +11,4 @@ inputs:
     description: "Should job wait for deployment to succeed"
     required: false 
 runs:
-  using: "node20"
-  main: "dist/main.js"
+  using: "node18"
