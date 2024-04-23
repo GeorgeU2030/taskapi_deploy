@@ -2,12 +2,11 @@ name: NestJS CI/CD
 
 on:
   push:
-    branches: [main]
+    branches: [main]  # Asegúrate de ajustar esto si deseas activar el flujo de trabajo en otras ramas.
 
 jobs:
-
-  test:
-    name: Test
+  build_and_test:
+    name: Build and Test
     runs-on: ubuntu-latest
 
     strategy:
@@ -15,46 +14,41 @@ jobs:
         node-version: [20.x]
 
     steps:
-      - name: Checkout 
-        uses: actions/checkout@v3 # was "v2" before 
-        with: 
-          fetch-depth: 0
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-      - name: Use Nest.JS ${{ matrix.node-version }}
-        uses: actions/setup-node@v3 # was "v2" before
-        with: 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
           node-version: ${{ matrix.node-version }}
 
-      - name: NPM install, build and test
-        run: |
-          npm install
-          npm run 
-          npm test
-        env: 
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test
+        env:
           MONGO_URI: ${{ secrets.MONGO_URI }}
 
-  
+      - name: Build
+        run: npm run build
+
   deploy:
-      name: Deploy
-      needs: [test]
-      runs-on: ubuntu-latest
-  
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v3
-  
-        - name: Setup Node.js
-          uses: actions/setup-node@v3
-          with:
-            node-version: '20.x'
-  
-        - name: Install Dependencies
-          run: npm install
-  
-        - name: Deploy to production
-          uses: georgeU2030/taskapi_deploy@v0.0.3
-          with:
-            service-id: ${{ secrets.SERVICE_ID }}
-            api-key: ${{ secrets.RENDER_API_KEY }}
-  
-          
+    name: Deploy to Production
+    needs: build_and_test  # Este job necesita que 'build_and_test' se complete exitosamente antes de comenzar.
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20.x'
+
+      - name: Deploy to Render
+        uses: georgeU2030/taskapi_deploy@v0.0.3
+        with:
+          service-id: ${{ secrets.SERVICE_ID }}
+          api-key: ${{ secrets.RENDER_API_KEY }}
