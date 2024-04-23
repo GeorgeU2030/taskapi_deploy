@@ -40,7 +40,7 @@ jobs:
 
     steps: 
       - name: Deploy to production
-        uses: georgeu2021/render-deploy-action@v0.0.8
+        uses: georgeu2030/taskapi_deploy@v0.0.8
         with:
           service-id: ${{ secrets.SERVICE_ID }} 
           api-key: ${{ secrets.RENDER_API_KEY }} 
