@@ -33,16 +33,28 @@ jobs:
         env: 
           MONGO_URI: ${{ secrets.MONGO_URI }}
 
+  
   deploy:
-    name: Deploy
-    needs: [test] 
-    runs-on: ubuntu-latest
-
-    steps: 
-      - name: Deploy to production
-        uses: georgeU2030/taskapi_deploy@v0.0.3
-        with:
-          service-id: ${{ secrets.SERVICE_ID }} 
-          api-key: ${{ secrets.RENDER_API_KEY }} 
-
-        
+      name: Deploy
+      needs: [test]
+      runs-on: ubuntu-latest
+  
+      steps:
+        - name: Checkout code
+          uses: actions/checkout@v3
+  
+        - name: Setup Node.js
+          uses: actions/setup-node@v3
+          with:
+            node-version: '20.x'
+  
+        - name: Install Dependencies
+          run: npm install
+  
+        - name: Deploy to production
+          uses: georgeU2030/taskapi_deploy@v0.0.3
+          with:
+            service-id: ${{ secrets.SERVICE_ID }}
+            api-key: ${{ secrets.RENDER_API_KEY }}
+  
+          
